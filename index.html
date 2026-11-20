@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Autonomous AI Sales & Concierge System</title>
+  <title>Autonomous AI Concierge — Instant Mode</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -19,48 +19,49 @@
       0%, 80%, 100% { transform: translateY(0); }
       40% { transform: translateY(-5px); }
     }
-    .d1 { animation: bounceDot 1.2s infinite ease-in-out; }
-    .d2 { animation: bounceDot 1.2s infinite ease-in-out 0.15s; }
-    .d3 { animation: bounceDot 1.2s infinite ease-in-out 0.3s; }
+    .d1 { animation: bounceDot 1s infinite ease-in-out; }
+    .d2 { animation: bounceDot 1s infinite ease-in-out 0.12s; }
+    .d3 { animation: bounceDot 1s infinite ease-in-out 0.24s; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-900 min-h-screen flex flex-col">
 
-  <!-- AGENCY COMMAND STUDIO (Hidden automatically when ?demo=1 is opened by client) -->
+  <!-- AGENCY COMMAND STUDIO -->
   <div id="agencyBar" class="bg-slate-900 text-white px-3 py-3 border-b border-slate-800 z-50">
     <div class="max-w-6xl mx-auto space-y-2.5">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-2">
-          <span class="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Autonomous AI v2</span>
-          <span class="text-xs text-slate-300 font-medium">WhatsApp + Email + Auto-Calculator</span>
+          <span class="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Turbo Streaming v4</span>
+          <span class="text-xs text-slate-300 font-medium">&lt;1s Instant Reply Mode</span>
         </div>
-        <div class="flex items-center gap-3 text-[11px]">
-          <span id="keyStatus" class="text-amber-400 font-medium">● Paste Gemini Key</span>
-          <span id="emailStatus" class="text-slate-400">● Email: Demo Mode</span>
-        </div>
+        <span id="keyStatus" class="text-[11px] text-amber-400 font-semibold">● Paste API Key & Tap Test</span>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-        <input id="inApiKey" type="password" placeholder="Gemini API Key (AQ.Ab8...)" oninput="saveKeys()"
-          class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400" />
-        <input id="inWeb3Key" type="password" placeholder="Web3Forms Email Key (Optional)" oninput="saveKeys()"
-          class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2">
+        <div class="flex gap-1.5 lg:col-span-2">
+          <input id="inApiKey" type="text" placeholder="Paste Gemini (AIza...) or Groq (gsk_...) Key" oninput="saveKeys()"
+            class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400" />
+          <button onclick="testApiKey()" id="testBtn"
+            class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs px-3 py-2 rounded-lg cursor-pointer shrink-0">
+            Test
+          </button>
+        </div>
         <select id="inNiche"
           class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-400">
           <option value="clinic">Mode: Dental / Aesthetic Clinic</option>
           <option value="restaurant">Mode: Restaurant Menu & Orders</option>
         </select>
-        <input id="inName" type="text" placeholder="Business Name (e.g. Prime Grill)"
+        <input id="inName" type="text" placeholder="Business Name (e.g. Prime Dental)"
           class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400" />
         <input id="inPhone" type="text" placeholder="Owner WhatsApp (+13055550199)"
           class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400" />
         <button onclick="copyClientLink()"
           class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg transition cursor-pointer">
-          Copy Client Demo Link
+          Copy Client Link
         </button>
       </div>
       <p id="copyToast" class="hidden text-center text-xs text-emerald-400 font-semibold">
-        ✅ Next-Level Client Link Copied! Share it directly via Email, DM, or WhatsApp.
+        ✅ Instant Client Link Copied! Ready to send via Email, DM, or WhatsApp.
       </p>
     </div>
   </div>
@@ -75,11 +76,11 @@
           </div>
           <div>
             <div id="brandTitle" class="font-bold text-slate-900 text-sm sm:text-base leading-tight">BrightSmile Dental & Aesthetics</div>
-            <div id="brandSub" class="text-[11px] text-slate-500">24/7 Autonomous AI Concierge • Instant WhatsApp & Email Sync</div>
+            <div class="text-[11px] text-slate-500">24/7 Real-Time AI Concierge • WhatsApp & Calendar Sync</div>
           </div>
         </div>
         <button onclick="toggleChat(true)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-full transition cursor-pointer">
-          Open AI Assistant
+          Open AI Chat
         </button>
       </div>
     </nav>
@@ -88,23 +89,22 @@
       <div class="max-w-2xl">
         <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full mb-5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-          Autonomous Sales, Menu & Booking Engine
+          Sub-Second AI Sales & Booking Engine
         </div>
-        <h1 id="heroHeadline" class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
           Instant Quotes, Appointments & WhatsApp Dispatch for <span id="heroName" class="text-teal-600">BrightSmile Dental & Aesthetics</span>.
         </h1>
-        <p id="heroDesc" class="text-slate-600 mt-4 text-sm sm:text-lg leading-relaxed">
-          Ask about services, request multi-item pricing estimates, switch languages anytime, and lock in bookings—automatically synced to WhatsApp, Email, and Calendar.
+        <p class="text-slate-600 mt-4 text-sm sm:text-lg leading-relaxed">
+          Ask about services, calculate multi-item pricing estimates, switch languages anytime, and lock in bookings—automatically synced to WhatsApp and Calendar.
         </p>
         <div class="mt-7 flex flex-wrap items-center gap-3">
           <button onclick="toggleChat(true)" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm px-6 py-3.5 rounded-xl shadow-lg transition cursor-pointer">
             Test Live AI Agent →
           </button>
-          <span class="text-xs text-slate-500">Supports English, Arabic, Spanish & Urdu automatically</span>
+          <span class="text-xs text-slate-500">Supports English, Arabic, Spanish & Urdu</span>
         </div>
       </div>
 
-      <!-- Dynamic Feature / Menu Cards -->
       <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12"></div>
     </section>
   </div>
@@ -119,11 +119,10 @@
     <span class="text-xs font-bold pr-1.5">AI Concierge Online</span>
   </button>
 
-  <!-- FLOATING NEXT-LEVEL CHAT WIDGET -->
+  <!-- FLOATING CHAT WIDGET -->
   <div id="chatWidget"
-    class="hidden fixed bottom-0 right-0 sm:bottom-5 sm:right-5 z-50 w-full sm:w-[400px] h-[90dvh] sm:h-[610px] bg-white sm:rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+    class="hidden fixed bottom-0 right-0 sm:bottom-5 sm:right-5 z-50 w-full sm:w-[400px] h-[88dvh] sm:h-[600px] bg-white sm:rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
     
-    <!-- Header -->
     <div class="bg-slate-900 text-white px-4 py-3.5 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-3">
         <div class="relative">
@@ -134,7 +133,7 @@
         </div>
         <div>
           <h3 id="widgetBrand" class="font-bold text-sm leading-tight truncate max-w-[205px]">BrightSmile AI</h3>
-          <p class="text-[11px] text-emerald-400 font-medium">● Online • WhatsApp & Email Synced</p>
+          <p class="text-[11px] text-emerald-400 font-medium">● Online • Real-Time Streaming</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
@@ -147,15 +146,12 @@
       </div>
     </div>
 
-    <!-- Messages -->
     <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 chat-scroll bg-slate-50"></div>
 
-    <!-- Dynamic Quick Chips -->
     <div id="quickChips" class="px-3 py-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto shrink-0"></div>
 
-    <!-- Input -->
     <form onsubmit="sendMessage(event)" class="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
-      <input id="msgInput" type="text" placeholder="Ask menu/rates or book in any language..." autocomplete="off"
+      <input id="msgInput" type="text" placeholder="Ask rates, menu, or book..." autocomplete="off"
         class="flex-1 text-sm bg-slate-100 rounded-xl px-3.5 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" />
       <button type="submit" id="sendBtn"
         class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition cursor-pointer">
@@ -176,10 +172,12 @@
       isDemo: params.get('demo') === '1'
     };
 
-    let geminiKey = hashParams.get('k') || localStorage.getItem('gemini_agency_key') || '';
-    let web3Key = hashParams.get('w') || localStorage.getItem('web3_agency_key') || '';
+    function cleanKey(raw) {
+      return (raw || '').replace(/['"\s\r\n]/g, '');
+    }
 
-    // Apply Branding & Niche UI
+    let apiKey = cleanKey(hashParams.get('k') || localStorage.getItem('gemini_agency_key'));
+
     document.title = `${config.name} — Autonomous AI Concierge`;
     document.getElementById('brandTitle').textContent = config.name;
     document.getElementById('heroName').textContent = config.name;
@@ -189,34 +187,117 @@
     if (config.isDemo) {
       document.getElementById('agencyBar').style.display = 'none';
       window.history.replaceState({}, document.title, window.location.pathname);
-    } else {
-      if (geminiKey) {
-        document.getElementById('inApiKey').value = geminiKey;
-        document.getElementById('keyStatus').textContent = '● Gemini AI Active';
-        document.getElementById('keyStatus').className = 'text-emerald-400 font-semibold';
-      }
-      if (web3Key) {
-        document.getElementById('inWeb3Key').value = web3Key;
-        document.getElementById('emailStatus').textContent = '● Live Email Active';
-        document.getElementById('emailStatus').className = 'text-emerald-400 font-semibold';
-      }
+    } else if (apiKey) {
+      document.getElementById('inApiKey').value = apiKey;
     }
 
     function saveKeys() {
-      const g = document.getElementById('inApiKey').value.trim();
-      const w = document.getElementById('inWeb3Key').value.trim();
-      if (g) {
-        geminiKey = g;
-        localStorage.setItem('gemini_agency_key', g);
-        document.getElementById('keyStatus').textContent = '● Gemini AI Active';
-        document.getElementById('keyStatus').className = 'text-emerald-400 font-semibold';
+      apiKey = cleanKey(document.getElementById('inApiKey').value);
+      localStorage.setItem('gemini_agency_key', apiKey);
+    }
+
+    // Ultra-Fast Streaming Engine (Supports both Gemini Zero-Thinking & Groq Turbo)
+    async function streamAIResponse(messages, sysPrompt, onChunk) {
+      if (!apiKey) throw new Error('NO_KEY');
+
+      // 1. If Groq Key (gsk_...) -> Sub-0.4s Ultra Speed
+      if (apiKey.startsWith('gsk_')) {
+        const groqMsgs = [{ role: 'system', content: sysPrompt }, ...messages.map(m => ({
+          role: m.role === 'model' ? 'assistant' : 'user',
+          content: m.parts[0].text
+        }))];
+
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: groqMsgs, stream: true, temperature: 0.6, max_tokens: 300 })
+        });
+        if (!res.ok) throw new Error('API_ERROR');
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '', full = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+          for (const line of lines) {
+            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+              try {
+                const json = JSON.parse(line.slice(6));
+                const token = json.choices?.[0]?.delta?.content || '';
+                if (token) { full += token; onChunk(full); }
+              } catch {}
+            }
+          }
+        }
+        return full;
       }
-      if (w) {
-        web3Key = w;
-        localStorage.setItem('web3_agency_key', w);
-        document.getElementById('emailStatus').textContent = '● Live Email Active';
-        document.getElementById('emailStatus').className = 'text-emerald-400 font-semibold';
+
+      // 2. Gemini API with thinkingBudget: 0 + Live SSE Streaming (< 1s first word)
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${encodeURIComponent(apiKey)}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: sysPrompt }] },
+          contents: messages,
+          generationConfig: {
+            temperature: 0.6,
+            maxOutputTokens: 300,
+            thinkingConfig: { thinkingBudget: 0 }
+          }
+        })
+      });
+
+      if (!res.ok) throw new Error('API_ERROR');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '', full = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const json = JSON.parse(line.slice(6));
+              const token = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
+              if (token) { full += token; onChunk(full); }
+            } catch {}
+          }
+        }
       }
+      return full;
+    }
+
+    async function testApiKey() {
+      saveKeys();
+      const status = document.getElementById('keyStatus');
+      const btn = document.getElementById('testBtn');
+      if (!apiKey) {
+        status.textContent = '❌ Paste key first!';
+        status.className = 'text-[11px] text-rose-400 font-bold';
+        return;
+      }
+      btn.textContent = '...';
+      const start = performance.now();
+      try {
+        await streamAIResponse([{ role: 'user', parts: [{ text: 'Hi' }] }], 'Reply with 1 word: Ready.', () => {});
+        const sec = ((performance.now() - start) / 1000).toFixed(1);
+        status.textContent = `✅ Active! (${sec}s speed)`;
+        status.className = 'text-[11px] text-emerald-400 font-bold';
+      } catch {
+        status.textContent = '❌ Invalid Key (Use AIzaSy... or gsk_...)';
+        status.className = 'text-[11px] text-rose-400 font-bold';
+      }
+      btn.textContent = 'Test';
     }
 
     function copyClientLink() {
@@ -226,11 +307,7 @@
       const cPhone = document.getElementById('inPhone').value.trim() || config.phone;
 
       const base = window.location.origin + window.location.pathname;
-      const hashParts = [];
-      if (geminiKey) hashParts.push(`k=${encodeURIComponent(geminiKey)}`);
-      if (web3Key) hashParts.push(`w=${encodeURIComponent(web3Key)}`);
-      const hashStr = hashParts.length ? `#${hashParts.join('&')}` : '';
-
+      const hashStr = apiKey ? `#k=${encodeURIComponent(apiKey)}` : '';
       const fullUrl = `${base}?niche=${encodeURIComponent(selNiche)}&name=${encodeURIComponent(cName)}&phone=${encodeURIComponent(cPhone)}&demo=1${hashStr}`;
 
       navigator.clipboard.writeText(fullUrl).then(() => {
@@ -240,7 +317,6 @@
       });
     }
 
-    // Populate Niche Cards & Quick Chips
     const cardsGrid = document.getElementById('cardsGrid');
     const quickChips = document.getElementById('quickChips');
 
@@ -250,9 +326,9 @@
         <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50"><div class="text-teal-700 font-bold text-sm">Family Platters & Deals</div><p class="text-xs text-slate-500 mt-1">Royal Feast for 4 ($95) including starters, mixed grill, drinks & dessert.</p></div>
         <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50"><div class="text-teal-700 font-bold text-sm">VIP Table & Catering</div><p class="text-xs text-slate-500 mt-1">Instant table reservations & custom event quotes dispatched to WhatsApp.</p></div>`;
       quickChips.innerHTML = `
-        <button onclick="quickSend('Show me the full menu and rates')" class="whitespace-nowrap text-[11px] bg-emerald-50 text-emerald-800 font-semibold px-3 py-1.5 rounded-full border border-emerald-200 cursor-pointer">📋 Full Menu & Rates</button>
-        <button onclick="quickSend('Calculate bill for 2 Ribeye Steaks and 1 Family Platter')" class="whitespace-nowrap text-[11px] bg-slate-100 text-slate-700 font-medium px-3 py-1.5 rounded-full cursor-pointer">🧮 Calculate Order</button>
-        <button onclick="quickSend('I want to book a VIP table for 4 tonight')" class="whitespace-nowrap text-[11px] bg-slate-100 text-slate-700 font-medium px-3 py-1.5 rounded-full cursor-pointer">🍽️ Book Table</button>`;
+        <button onclick="quickSend('Show me the full menu and rates')" class="whitespace-nowrap text-[11px] bg-emerald-50 text-emerald-800 font-semibold px-3 py-1.5 rounded-full border border-emerald-200 cursor-pointer">📋 Menu & Rates</button>
+        <button onclick="quickSend('Calculate bill for 2 Ribeye Steaks and 1 Family Platter')" class="whitespace-nowrap text-[11px] bg-slate-100 text-slate-700 font-medium px-3 py-1.5 rounded-full cursor-pointer">🧮 Calculate Bill</button>
+        <button onclick="quickSend('I want to book a VIP table')" class="whitespace-nowrap text-[11px] bg-slate-100 text-slate-700 font-medium px-3 py-1.5 rounded-full cursor-pointer">🍽️ Book Table</button>`;
     } else {
       cardsGrid.innerHTML = `
         <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50"><div class="text-teal-700 font-bold text-sm">Laser Whitening & Veneers</div><p class="text-xs text-slate-500 mt-1">In-office Laser Whitening ($299) & Porcelain Veneers ($950/tooth).</p></div>
@@ -260,7 +336,7 @@
         <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50"><div class="text-teal-700 font-bold text-sm">Same-Day Emergency</div><p class="text-xs text-slate-500 mt-1">Priority urgent pain relief slots + Checkup & Cleaning ($99).</p></div>`;
       quickChips.innerHTML = `
         <button onclick="quickSend('Show me all treatments and rates')" class="whitespace-nowrap text-[11px] bg-emerald-50 text-emerald-800 font-semibold px-3 py-1.5 rounded-full border border-emerald-200 cursor-pointer">💎 Services & Rates</button>
-        <button onclick="quickSend('Calculate total if I get Whitening and Cleaning together')" class="whitespace-nowrap text-[11px] bg-slate-100 text-slate-700 font-medium px-3 py-1.5 rounded-full cursor-pointer">🧮 Bundle Quote</button>
+        <button onclick="quickSend('Calculate total for Whitening and Cleaning together')" class="whitespace-nowrap text-[11px] bg-slate-100 text-slate-700 font-medium px-3 py-1.5 rounded-full cursor-pointer">🧮 Bundle Quote</button>
         <button onclick="quickSend('I want to book an appointment')" class="whitespace-nowrap text-[11px] bg-slate-100 text-slate-700 font-medium px-3 py-1.5 rounded-full cursor-pointer">📅 Book Visit</button>`;
     }
 
@@ -269,26 +345,23 @@
       document.getElementById('chatLauncher').classList.toggle('hidden', open);
     }
 
-    // Knowledge Base & Autonomous Sales Prompt
     const knowledge = config.niche === 'restaurant'
-      ? `Menu & Prices: Prime Halal Ribeye Steak ($38), Grilled Lamb Chops ($32), Wagyu Truffle Burger ($22), Dynamite Prawns Starter ($14), Royal Family Platter for 4 ($95), Fresh Mint Margarita ($7), Molten Lava Cake ($11). Hours: Daily 12 PM – 12 AM. Offers takeaway orders, delivery, and VIP table bookings.`
-      : `Treatments & Prices: New Patient Exam + X-Rays + Cleaning ($99), Laser Teeth Whitening ($299), Porcelain Veneers ($950/tooth), Invisalign Full Package ($3,200 or $135/mo), Single Dental Implant ($1,850), Same-Day Emergency Visit ($120). Hours: Mon–Sat 8 AM – 7 PM. Accepts all major PPO insurance.`;
+      ? `Menu & Prices: Prime Halal Ribeye Steak ($38), Grilled Lamb Chops ($32), Wagyu Truffle Burger ($22), Dynamite Prawns ($14), Royal Family Platter for 4 ($95), Mint Margarita ($7). Hours: Daily 12 PM – 12 AM.`
+      : `Treatments & Prices: Exam + X-Rays + Cleaning ($99), Laser Teeth Whitening ($299), Porcelain Veneers ($950/tooth), Invisalign Package ($3,200 or $135/mo), Single Dental Implant ($1,850), Same-Day Emergency Visit ($120). Hours: Mon–Sat 8 AM – 7 PM.`;
 
-    const systemPrompt = `You are the Autonomous AI Sales & Concierge Agent for "${config.name}" (Owner WhatsApp: ${config.phone}).
-Business Catalog: ${knowledge}
-
-Next-Level Capabilities & Rules:
-1. Auto-Language: Automatically detect the language the user writes in (English, Arabic, Spanish, Urdu, etc.) and reply fluently in that exact same language.
-2. Smart Calculator & Upsell: Whenever a user asks about multiple items/services, calculate the exact total dollar sum accurately and politely suggest one relevant add-on or bundle deal.
-3. Formatting: Keep responses clean, warm, and concise (use HTML <br> and <strong> for readability—NEVER use markdown asterisks **).
-4. Autonomous Lead & Order Capture: When the user wants to book a visit, reserve a table, or place an order, naturally collect: (1) Customer Name, (2) Selected Items/Treatment, (3) Preferred Date/Time, and (4) Customer Phone/WhatsApp.
-5. Once all 4 details are confirmed by the user, append this exact tag at the very end of your response (keep tag values in English):
+    const systemPrompt = `You are the fast, friendly AI Concierge for "${config.name}" (WhatsApp: ${config.phone}).
+Catalog: ${knowledge}
+Rules:
+1. Reply in the exact language the user uses (English, Arabic, Spanish, Urdu, etc.).
+2. Calculate exact dollar totals when multiple items are asked and suggest 1 smart bundle.
+3. Keep answers super crisp (2–3 short sentences, use HTML <br> and <strong>, NO markdown **).
+4. To book/order, collect: (1) Name, (2) Items/Treatment, (3) Preferred Date/Time, (4) Phone/WhatsApp. Once all 4 are confirmed, append at the very end:
 [CONFIRMED|CustomerName|ItemsOrTreatment|TotalEstimate|DateTime|CustomerPhone]`;
 
     let chatHistory = [];
     const chatMessages = document.getElementById('chatMessages');
 
-    function renderBubble(role, html) {
+    function createBubble(role, html = '') {
       const wrap = document.createElement('div');
       wrap.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
       const box = document.createElement('div');
@@ -299,29 +372,16 @@ Next-Level Capabilities & Rules:
       wrap.appendChild(box);
       chatMessages.appendChild(wrap);
       chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function showLoader() {
-      const div = document.createElement('div');
-      div.id = 'aiLoader';
-      div.className = 'flex justify-start';
-      div.innerHTML = `<div class="bg-white border border-slate-200 px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1.5 items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full d1"></span><span class="w-2 h-2 bg-emerald-500 rounded-full d2"></span><span class="w-2 h-2 bg-emerald-500 rounded-full d3"></span></div>`;
-      chatMessages.appendChild(div);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function hideLoader() {
-      const el = document.getElementById('aiLoader');
-      if (el) el.remove();
+      return box;
     }
 
     function resetConversation() {
       chatHistory = [];
       chatMessages.innerHTML = '';
       const intro = config.niche === 'restaurant'
-        ? `Welcome to <strong>${config.name}</strong>! 🍽️ I'm your 24/7 AI Concierge.<br><br>Ask me for our menu & rates, let me calculate a custom order bill, or book a VIP table—I'll sync your confirmation straight to WhatsApp & Email!`
-        : `Welcome to <strong>${config.name}</strong>! ✨ I'm your 24/7 AI Concierge.<br><br>Ask about treatments & rates, calculate a custom package quote, or book an appointment—synced automatically to WhatsApp, Email & Calendar!`;
-      renderBubble('bot', intro);
+        ? `Welcome to <strong>${config.name}</strong>! 🍽️ Ask for our menu & rates, calculate a bill, or book a VIP table—synced straight to WhatsApp!`
+        : `Welcome to <strong>${config.name}</strong>! ✨ Ask about treatments & rates, calculate a bundle quote, or book an appointment—synced to WhatsApp & Calendar!`;
+      createBubble('bot', intro);
     }
 
     function quickSend(text) {
@@ -329,48 +389,13 @@ Next-Level Capabilities & Rules:
       sendMessage(new Event('submit'));
     }
 
-    // Download 1-Click Calendar File (.ics)
     function downloadCalendar(title, desc) {
-      const ics = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'BEGIN:VEVENT',
-        `SUMMARY:${title}`,
-        `DESCRIPTION:${desc}`,
-        'DTSTART:20261125T100000Z',
-        'DTEND:20261125T110000Z',
-        'END:VEVENT',
-        'END:VCALENDAR'
-      ].join('\r\n');
+      const ics = ['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT',`SUMMARY:${title}`,`DESCRIPTION:${desc}`,'DTSTART:20261125T100000Z','DTEND:20261125T110000Z','END:VEVENT','END:VCALENDAR'].join('\r\n');
       const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = 'booking-confirmation.ics';
       link.click();
-    }
-
-    // Real-Time Email Dispatch via Web3Forms
-    async function dispatchEmailLead(leadData) {
-      if (!web3Key) return false;
-      try {
-        const res = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({
-            access_key: web3Key,
-            subject: `New AI Lead (${config.name}): ${leadData.customer}`,
-            from_name: `${config.name} AI Concierge`,
-            Customer_Name: leadData.customer,
-            Order_Or_Service: leadData.items,
-            Estimated_Total: leadData.total,
-            Scheduled_Time: leadData.time,
-            Customer_Phone: leadData.phone
-          })
-        });
-        return res.ok;
-      } catch {
-        return false;
-      }
     }
 
     async function sendMessage(e) {
@@ -380,72 +405,41 @@ Next-Level Capabilities & Rules:
       const text = input.value.trim();
       if (!text) return;
 
-      renderBubble('user', text);
+      createBubble('user', text);
       input.value = '';
       btn.disabled = true;
-      showLoader();
+
+      // Create immediate streaming bubble with pulsing dots
+      const botBox = createBubble('bot', `<span class="inline-flex gap-1 py-1"><span class="w-2 h-2 bg-emerald-500 rounded-full d1"></span><span class="w-2 h-2 bg-emerald-500 rounded-full d2"></span><span class="w-2 h-2 bg-emerald-500 rounded-full d3"></span></span>`);
 
       chatHistory.push({ role: 'user', parts: [{ text }] });
 
-      if (!geminiKey) {
-        hideLoader();
-        btn.disabled = false;
-        renderBubble('bot', `⚠️ Paste your Gemini API Key in the top <strong>Agency Studio</strong> bar to activate the AI brain.`);
-        return;
-      }
-
       try {
-        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-goog-api-key': geminiKey
-          },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemPrompt }] },
-            contents: chatHistory,
-            generationConfig: { temperature: 0.65, maxOutputTokens: 400 }
-          })
+        const reply = await streamAIResponse(chatHistory, systemPrompt, (partialText) => {
+          // Hide [CONFIRMED...] tag while streaming live
+          const cleanVisible = partialText.split('[CONFIRMED')[0].trim();
+          if (cleanVisible) {
+            botBox.innerHTML = cleanVisible;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          }
         });
 
-        const data = await response.json();
-        hideLoader();
         btn.disabled = false;
-
-        if (!response.ok || !data.candidates?.[0]) {
-          renderBubble('bot', `⚠️ API Error: ${data.error?.message || 'Please verify API key.'}`);
-          return;
-        }
-
-        let reply = data.candidates[0].content.parts[0].text;
         chatHistory.push({ role: 'model', parts: [{ text: reply }] });
 
         const match = reply.match(/\[CONFIRMED\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\]/);
         if (match) {
-          reply = reply.replace(match[0], '').trim();
-          if (reply) renderBubble('bot', reply);
+          const cleanText = reply.replace(match[0], '').trim();
+          botBox.innerHTML = cleanText || `Your booking at <strong>${config.name}</strong> is confirmed!`;
 
-          const lead = {
-            customer: match[1].trim(),
-            items: match[2].trim(),
-            total: match[3].trim(),
-            time: match[4].trim(),
-            phone: match[5].trim()
-          };
-
-          const emailSent = await dispatchEmailLead(lead);
+          const lead = { customer: match[1].trim(), items: match[2].trim(), total: match[3].trim(), time: match[4].trim(), phone: match[5].trim() };
           const cleanOwnerPhone = config.phone.replace(/[^0-9]/g, '');
-          const waText = `🔔 *New AI Booking / Order — ${config.name}*\n\n👤 *Customer:* ${lead.customer}\n📋 *Details:* ${lead.items}\n💰 *Estimate:* ${lead.total}\n⏰ *Time:* ${lead.time}\n📞 *Phone:* ${lead.phone}`;
+          const waText = `🔔 *New AI Booking — ${config.name}*\n\n👤 *Customer:* ${lead.customer}\n📋 *Details:* ${lead.items}\n💰 *Estimate:* ${lead.total}\n⏰ *Time:* ${lead.time}\n📞 *Phone:* ${lead.phone}`;
           const waLink = `https://wa.me/${cleanOwnerPhone}?text=${encodeURIComponent(waText)}`;
 
-          renderBubble('bot', `
+          createBubble('bot', `
             <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 text-xs space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="font-extrabold text-emerald-900 text-sm">✅ Confirmed & Dispatched</span>
-                <span class="bg-emerald-200 text-emerald-900 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  ${emailSent ? '📧 Email Sent!' : '📧 Email Ready'}
-                </span>
-              </div>
+              <div class="font-extrabold text-emerald-900 text-sm">✅ Confirmed & Ready for WhatsApp</div>
               <div class="space-y-0.5 text-slate-700">
                 <div><strong>Name:</strong> ${lead.customer}</div>
                 <div><strong>Selection:</strong> ${lead.items}</div>
@@ -454,29 +448,25 @@ Next-Level Capabilities & Rules:
                 <div><strong>Contact:</strong> ${lead.phone}</div>
               </div>
               <div class="pt-1 flex flex-col gap-1.5">
-                <a href="${waLink}" target="_blank"
-                  class="w-full text-center bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-extrabold py-2 px-3 rounded-xl transition block">
-                  💬 Send Instant Receipt to Owner WhatsApp
+                <a href="${waLink}" target="_blank" class="w-full text-center bg-[#25D366] text-slate-950 font-extrabold py-2 px-3 rounded-xl block">
+                  💬 Send Receipt to Owner WhatsApp
                 </a>
-                <button onclick="downloadCalendar('${config.name} - ${lead.items}', 'Customer: ${lead.customer} | Time: ${lead.time}')"
-                  class="w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 px-3 rounded-xl transition cursor-pointer">
+                <button onclick="downloadCalendar('${config.name} - ${lead.items}', 'Customer: ${lead.customer}')" class="w-full text-center bg-slate-900 text-white font-semibold py-2 px-3 rounded-xl cursor-pointer">
                   📅 Save to Phone Calendar (.ics)
                 </button>
               </div>
             </div>
           `);
-        } else {
-          renderBubble('bot', reply);
         }
-      } catch {
-        hideLoader();
+      } catch (err) {
         btn.disabled = false;
-        renderBubble('bot', `⚠️ Network error. Please check your connection.`);
+        botBox.innerHTML = err.message === 'NO_KEY'
+          ? `⚠️ Paste your <strong>AIzaSy...</strong> (Gemini) or <strong>gsk_...</strong> (Groq) key in the top bar first.`
+          : `⚠️ Key error — tap <strong>Test</strong> in the top bar to check your API key.`;
       }
     }
 
     resetConversation();
-    setTimeout(() => toggleChat(true), 800);
   </script>
 </body>
 </html>
