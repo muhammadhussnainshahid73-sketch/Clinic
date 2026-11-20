@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>24/7 AI Receptionist Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .chat-scroll::-webkit-scrollbar { width: 5px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    @keyframes pulseDot {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+    .dot-1 { animation: pulseDot 1.4s infinite ease-in-out both; animation-delay: -0.32s; }
+    .dot-2 { animation: pulseDot 1.4s infinite ease-in-out both; animation-delay: -0.16s; }
+    .dot-3 { animation: pulseDot 1.4s infinite ease-in-out both; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- AGENCY CUSTOMIZER BAR (Hidden when ?demo=1 is shared with client) -->
+  <div id="agencyBar" class="bg-slate-900 text-white px-4 py-3 border-b border-slate-700 shadow-md">
+    <div class="max-w-6xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="bg-emerald-500 text-slate-950 text-xs font-bold px-2 py-0.5 rounded uppercase">Agency Mode</span>
+        <span class="text-sm text-slate-300">Customize for any client & copy their personal link:</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 flex-1 max-w-3xl">
+        <input id="inName" type="text" placeholder="Clinic Name (e.g. Apex Dental)" class="bg-slate-800 border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-400" />
+        <input id="inCity" type="text" placeholder="City (e.g. London / Miami)" class="bg-slate-800 border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-400" />
+        <input id="inPhone" type="text" placeholder="Phone (e.g. +1 305-555-0142)" class="bg-slate-800 border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-400" />
+        <button onclick="generateClientLink()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs px-3 py-1.5 rounded transition cursor-pointer">
+          Copy Client Demo Link
+        </button>
+      </div>
+    </div>
+    <p id="copyToast" class="hidden text-center text-xs text-emerald-400 mt-2 font-medium">
+      Client demo link copied! Paste it directly in your Email, Instagram DM, or WhatsApp message.
+    </p>
+  </div>
+
+  <!-- CLIENT WEBSITE PREVIEW HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          +
+        </div>
+        <div>
+          <h1 id="brandTitle" class="font-bold text-lg text-slate-900 leading-tight">BrightSmile Dental & Aesthetics</h1>
+          <p id="brandLocation" class="text-xs text-slate-500">Premier Cosmetic & Family Dentistry • Open Mon–Sat</p>
+        </div>
+      </div>
+      <div class="hidden sm:flex items-center gap-4 text-sm">
+        <span id="brandPhone" class="text-slate-600 font-medium">+1 (305) 555-0199</span>
+        <button onclick="openLeadsModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+          Captured Leads (<span id="leadCount">0</span>)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT: MOCK CLINIC + LIVE AI AGENT -->
+  <main class="max-w-6xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start flex-1">
+    
+    <!-- Left Column: Business Value & Services Preview -->
+    <div class="lg:col-span-7 space-y-6">
+      <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+        <span class="inline-block bg-teal-50 text-teal-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">
+          24/7 AI Receptionist Live Preview
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 leading-snug">
+          Never Miss Another Patient Inquiry — Even at 2:00 AM.
+        </h2>
+        <p class="text-slate-600 mt-3 text-sm sm:text-base leading-relaxed">
+          This interactive demo shows how <strong id="heroBrandName" class="text-slate-800">BrightSmile Dental & Aesthetics</strong> can automatically answer treatment questions, share pricing, handle dental emergencies, and book confirmed appointments 24/7 without extra front-desk staff.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+            <p class="text-xs text-slate-500">Response Time</p>
+            <p class="text-lg font-bold text-teal-700 mt-0.5">&lt; 2 Seconds</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+            <p class="text-xs text-slate-500">Availability</p>
+            <p class="text-lg font-bold text-teal-700 mt-0.5">24/7 / 365</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+            <p class="text-xs text-slate-500">Lead Capture</p>
+            <p class="text-lg font-bold text-teal-700 mt-0.5">Instant SMS/Email</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-slate-900 text-base mb-3">Trained Clinic Knowledge Base (Active in Demo)</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-600">
+          <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+            <strong class="text-slate-800 block mb-1">Teeth Whitening & Veneers</strong>
+            In-office laser whitening ($299) & porcelain veneers consultation.
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+            <strong class="text-slate-800 block mb-1">Invisalign & Braces</strong>
+            Clear aligner packages starting from $3,200 with 0% monthly plans.
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+            <strong class="text-slate-800 block mb-1">Dental Implants & Crowns</strong>
+            Single tooth titanium implants ($1,850) & same-day ceramic crowns.
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+            <strong class="text-slate-800 block mb-1">Emergency Dental Care</strong>
+            Same-day urgent appointments for toothache, swelling, or broken tooth.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Interactive AI Receptionist Widget -->
+    <div class="lg:col-span-5">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden flex flex-col h-[560px]">
+        
+        <!-- Chat Header -->
+        <div class="bg-teal-700 text-white px-4 py-3.5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <div class="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center font-bold text-white border-2 border-teal-300">
+                AI
+              </div>
+              <span class="w-3 h-3 bg-emerald-400 border-2 border-teal-700 rounded-full absolute bottom-0 right-0"></span>
+            </div>
+            <div>
+              <h3 id="chatHeaderTitle" class="font-semibold text-sm leading-tight">BrightSmile AI Receptionist</h3>
+              <p class="text-[11px] text-teal-100">Online • Replies instantly</p>
+            </div>
+          </div>
+          <button onclick="resetChat()" class="text-xs bg-teal-800 hover:bg-teal-900 px-2.5 py-1 rounded text-teal-100 transition">
+            Reset
+          </button>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div id="chatBox" class="flex-1 p-4 overflow-y-auto space-y-3 chat-scroll bg-slate-50/70">
+          <!-- Messages injected by JS -->
+        </div>
+
+        <!-- Quick Action Chips -->
+        <div id="quickChips" class="px-3 py-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto">
+          <button onclick="sendQuick('I want to book an appointment')" class="whitespace-nowrap text-xs bg-teal-50 hover:bg-teal-100 text-teal-800 font-medium px-3 py-1.5 rounded-full border border-teal-200 transition">
+            Book Appointment
+          </button>
+          <button onclick="sendQuick('How much is teeth whitening?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-full transition">
+            Whitening Prices
+          </button>
+          <button onclick="sendQuick('Do you accept insurance?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-full transition">
+            Insurance
+          </button>
+          <button onclick="sendQuick('I have a toothache emergency')" class="whitespace-nowrap text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium px-3 py-1.5 rounded-full border border-rose-200 transition">
+            Urgent Pain
+          </button>
+        </div>
+
+        <!-- Input Form -->
+        <form onsubmit="handleUserSubmit(event)" class="p-3 bg-white border-t border-slate-200 flex gap-2">
+          <input id="userInput" type="text" placeholder="Type your question or book a visit..." autocomplete="off"
+            class="flex-1 text-sm bg-slate-100 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition" />
+          <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition cursor-pointer">
+            Send
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- LEADS DASHBOARD MODAL -->
+  <div id="leadsModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-slate-900 text-lg">Captured Patient Leads</h3>
+        <button onclick="closeLeadsModal()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+      </div>
+      <div id="leadsList" class="space-y-2.5 max-h-64 overflow-y-auto text-sm text-slate-600">
+        <p class="text-xs text-slate-400">No appointments booked yet. Try booking one in the chat!</p>
+      </div>
+      <button onclick="closeLeadsModal()" class="mt-5 w-full bg-slate-900 text-white text-sm font-semibold py-2.5 rounded-xl">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 1. Read URL Parameters for Instant Client Personalization
+    const params = new URLSearchParams(window.location.search);
+    const config = {
+      name: params.get('name') || 'BrightSmile Dental & Aesthetics',
+      city: params.get('city') || 'Miami, FL',
+      phone: params.get('phone') || '+1 (305) 555-0199',
+      isClientDemo: params.get('demo') === '1'
+    };
+
+    // Apply Branding
+    document.title = `${config.name} — 24/7 AI Receptionist`;
+    document.getElementById('brandTitle').textContent = config.name;
+    document.getElementById('heroBrandName').textContent = config.name;
+    document.getElementById('chatHeaderTitle').textContent = `${config.name} AI`;
+    document.getElementById('brandLocation').textContent = `${config.city} • Open Mon–Sat (8:00 AM – 7:00 PM)`;
+    document.getElementById('brandPhone').textContent = config.phone;
+
+    if (config.isClientDemo) {
+      document.getElementById('agencyBar').style.display = 'none';
+    }
+
+    // 2. Agency Link Generator
+    function generateClientLink() {
+      const cName = document.getElementById('inName').value.trim() || config.name;
+      const cCity = document.getElementById('inCity').value.trim() || config.city;
+      const cPhone = document.getElementById('inPhone').value.trim() || config.phone;
+
+      const baseUrl = window.location.origin + window.location.pathname;
+      const shareUrl = `${baseUrl}?name=${encodeURIComponent(cName)}&city=${encodeURIComponent(cCity)}&phone=${encodeURIComponent(cPhone)}&demo=1`;
+
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        const toast = document.getElementById('copyToast');
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 4000);
+      });
+    }
+
+    // 3. Smart AI Conversational & Booking Engine
+    let bookingStep = 0; // 0 = idle, 1 = name, 2 = service, 3 = day/time, 4 = phone
+    let currentLead = {};
+    const capturedLeads = [];
+
+    const chatBox = document.getElementById('chatBox');
+
+    function addMessage(sender, htmlText) {
+      const wrap = document.createElement('div');
+      wrap.className = sender === 'user' ? 'flex justify-end' : 'flex justify-start';
+
+      const bubble = document.createElement('div');
+      bubble.className = sender === 'user'
+        ? 'bg-teal-600 text-white text-sm px-3.5 py-2.5 rounded-2xl rounded-br-sm max-w-[82%] shadow-sm'
+        : 'bg-white text-slate-800 border border-slate-200 text-sm px-3.5 py-2.5 rounded-2xl rounded-bl-sm max-w-[85%] shadow-sm leading-relaxed';
+
+      bubble.innerHTML = htmlText;
+      wrap.appendChild(bubble);
+      chatBox.appendChild(wrap);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function showTyping() {
+      const wrap = document.createElement('div');
+      wrap.id = 'typingIndicator';
+      wrap.className = 'flex justify-start';
+      wrap.innerHTML = `
+        <div class="bg-white border border-slate-200 px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1.5 items-center">
+          <span class="w-2 h-2 bg-slate-400 rounded-full dot-1"></span>
+          <span class="w-2 h-2 bg-slate-400 rounded-full dot-2"></span>
+          <span class="w-2 h-2 bg-slate-400 rounded-full dot-3"></span>
+        </div>`;
+      chatBox.appendChild(wrap);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function hideTyping() {
+      const el = document.getElementById('typingIndicator');
+      if (el) el.remove();
+    }
+
+    function initChat() {
+      chatBox.innerHTML = '';
+      bookingStep = 0;
+      currentLead = {};
+      addMessage('bot', `Hi there! 👋 Welcome to <strong>${config.name}</strong>. I'm your 24/7 AI Receptionist.<br><br>How can I help you today? I can answer pricing & treatment questions or book an appointment for you in 30 seconds.`);
+    }
+
+    function resetChat() {
+      initChat();
+    }
+
+    function sendQuick(text) {
+      document.getElementById('userInput').value = text;
+      handleUserSubmit(new Event('submit'));
+    }
+
+    function handleUserSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage('user', text);
+      input.value = '';
+      showTyping();
+
+      setTimeout(() => {
+        hideTyping();
+        const reply = generateBotResponse(text);
+        addMessage('bot', reply);
+      }, 600);
+    }
+
+    function generateBotResponse(rawText) {
+      const msg = rawText.toLowerCase();
+
+      // Active Appointment Booking Flow
+      if (bookingStep === 1) {
+        currentLead.name = rawText;
+        bookingStep = 2;
+        return `Nice to meet you, <strong>${currentLead.name}</strong>! Which treatment are you looking for? (e.g., Checkup & Cleaning, Teeth Whitening, Invisalign, Implants, or Emergency Visit)`;
+      }
+      if (bookingStep === 2) {
+        currentLead.service = rawText;
+        bookingStep = 3;
+        return `Got it — <strong>${currentLead.service}</strong>. What day and time works best for you? (e.g., Tomorrow at 11:00 AM, or Friday afternoon)`;
+      }
+      if (bookingStep === 3) {
+        currentLead.time = rawText;
+        bookingStep = 4;
+        return `Almost done! What is the best <strong>phone or WhatsApp number</strong> to send your appointment confirmation?`;
+      }
+      if (bookingStep === 4) {
+        currentLead.phone = rawText;
+        bookingStep = 0;
+        capturedLeads.push({ ...currentLead });
+        document.getElementById('leadCount').textContent = capturedLeads.length;
+        updateLeadsModal();
+
+        return `
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs space-y-1">
+            <p class="font-bold text-emerald-800 text-sm">✅ Appointment Request Confirmed!</p>
+            <p><strong>Patient:</strong> ${currentLead.name}</p>
+            <p><strong>Treatment:</strong> ${currentLead.service}</p>
+            <p><strong>Preferred Time:</strong> ${currentLead.time}</p>
+            <p><strong>Contact:</strong> ${currentLead.phone}</p>
+            <p class="text-emerald-700 pt-1">Our front desk at <strong>${config.name}</strong> has received your booking and will text you shortly!</p>
+          </div>`;
+      }
+
+      // Intent Detection
+      if (msg.includes('book') || msg.includes('appointment') || msg.includes('schedule') || msg.includes('visit') || msg.includes('slot')) {
+        bookingStep = 1;
+        return `I'd be happy to book your visit at <strong>${config.name}</strong>! First, what is your <strong>full name</strong>?`;
+      }
+
+      if (msg.includes('whiten') || msg.includes('veneer')) {
+        return `Our in-office <strong>Laser Teeth Whitening</strong> is <strong>$299</strong> (takes 45 minutes and brightens teeth up to 8 shades). We also offer custom Porcelain Veneers starting at $950/tooth.<br><br>Would you like me to reserve a consultation slot for you?`;
+      }
+
+      if (msg.includes('implant') || msg.includes('crown') || msg.includes('missing')) {
+        return `Single-tooth <strong>Titanium Dental Implants</strong> start at <strong>$1,850</strong> (including a free 3D CT scan consultation), and 0% monthly payment plans are available.<br><br>Shall I book a free implant evaluation for you?`;
+      }
+
+      if (msg.includes('invisalign') || msg.includes('brace') || msg.includes('aligner')) {
+        return `Full <strong>Invisalign Clear Aligner</strong> packages start at <strong>$3,200</strong> (or $135/month with 0% APR financing) and include a free 3D digital smile preview.<br><br>Want to book a free smile scan this week?`;
+      }
+
+      if (msg.includes('price') || msg.includes('cost') || msg.includes('much') || msg.includes('clean') || msg.includes('checkup')) {
+        return `Here are our most requested services at <strong>${config.name}</strong>:<br>• New Patient Exam + X-Rays + Cleaning: <strong>$99</strong><br>• Laser Teeth Whitening: <strong>$299</strong><br>• Invisalign Package: <strong>From $3,200</strong><br>• Dental Implant: <strong>From $1,850</strong><br><br>Would you like to schedule an appointment?`;
+      }
+
+      if (msg.includes('insurance') || msg.includes('plan') || msg.includes('payment')) {
+        return `Yes! We accept all major PPO dental insurance plans (Delta Dental, Cigna, Aetna, MetLife, BlueCross) and also offer <strong>0% APR monthly payment plans</strong> for uninsured patients.<br><br>Would you like to book a visit?`;
+      }
+
+      if (msg.includes('pain') || msg.includes('emergency') || msg.includes('ache') || msg.includes('broken') || msg.includes('urgent')) {
+        bookingStep = 1;
+        return `I'm sorry you're in pain! We keep <strong>same-day emergency slots</strong> open at our ${config.city} clinic.<br><br>For immediate urgent assistance you can call <strong>${config.phone}</strong>, or tell me your <strong>full name</strong> right now and I'll lock in an urgent slot for you.`;
+      }
+
+      if (msg.includes('hour') || msg.includes('open') || msg.includes('location') || msg.includes('where') || msg.includes('address')) {
+        return `<strong>${config.name}</strong> is located in <strong>${config.city}</strong>. We are open <strong>Monday to Saturday, 8:00 AM – 7:00 PM</strong>.<br><br>Would you like to book a morning or afternoon appointment?`;
+      }
+
+      return `Thanks for reaching out to <strong>${config.name}</strong>! I can help you with treatment pricing (Cleaning, Whitening, Invisalign, Implants), insurance details, or booking an appointment.<br><br>Type <strong>"Book"</strong> anytime to schedule your visit in 30 seconds!`;
+    }
+
+    // 4. Leads Modal Functions
+    function openLeadsModal() { document.getElementById('leadsModal').classList.remove('hidden'); }
+    function closeLeadsModal() { document.getElementById('leadsModal').classList.add('hidden'); }
+    function updateLeadsModal() {
+      const list = document.getElementById('leadsList');
+      list.innerHTML = capturedLeads.map((l, i) => `
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-slate-900">#${i + 1} ${l.name} — <span class="text-teal-700">${l.service}</span></div>
+          <div class="text-xs text-slate-500 mt-1">Time: ${l.time} | Phone: ${l.phone}</div>
+        </div>
+      `).join('');
+    }
+
+    initChat();
+  </script>
+</body>
+</html>
