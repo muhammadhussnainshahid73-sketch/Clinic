@@ -31,15 +31,15 @@
     <div class="max-w-6xl mx-auto space-y-2.5">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-2">
-          <span class="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Turbo Streaming v4</span>
-          <span class="text-xs text-slate-300 font-medium">&lt;1s Instant Reply Mode</span>
+          <span class="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Turbo AI v5</span>
+          <span class="text-xs text-slate-300 font-medium">Auto-Model + Sub-Second Speed</span>
         </div>
-        <span id="keyStatus" class="text-[11px] text-amber-400 font-semibold">● Paste API Key & Tap Test</span>
+        <span id="keyStatus" class="text-[11px] text-amber-400 font-semibold">● Paste Key & Tap Test</span>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2">
         <div class="flex gap-1.5 lg:col-span-2">
-          <input id="inApiKey" type="text" placeholder="Paste Gemini (AIza...) or Groq (gsk_...) Key" oninput="saveKeys()"
+          <input id="inApiKey" type="text" placeholder="Paste Groq (gsk_...) or Gemini (AIza...) Key" oninput="saveKeys()"
             class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400" />
           <button onclick="testApiKey()" id="testBtn"
             class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs px-3 py-2 rounded-lg cursor-pointer shrink-0">
@@ -61,7 +61,7 @@
         </button>
       </div>
       <p id="copyToast" class="hidden text-center text-xs text-emerald-400 font-semibold">
-        ✅ Instant Client Link Copied! Ready to send via Email, DM, or WhatsApp.
+        ✅ Client Link Copied! Ready to paste in Email, DM, or WhatsApp.
       </p>
     </div>
   </div>
@@ -177,6 +177,7 @@
     }
 
     let apiKey = cleanKey(hashParams.get('k') || localStorage.getItem('gemini_agency_key'));
+    let activeGroqModel = 'llama-3.1-8b-instant';
 
     document.title = `${config.name} — Autonomous AI Concierge`;
     document.getElementById('brandTitle').textContent = config.name;
@@ -196,23 +197,56 @@
       localStorage.setItem('gemini_agency_key', apiKey);
     }
 
-    // Ultra-Fast Streaming Engine (Supports both Gemini Zero-Thinking & Groq Turbo)
-    async function streamAIResponse(messages, sysPrompt, onChunk) {
-      if (!apiKey) throw new Error('NO_KEY');
+    async function getGroqModel() {
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/models', {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error?.message || `HTTP ${res.status}`);
+        }
+        const models = (data.data || []).map(m => m.id);
+        const preferred = models.find(id => id.includes('llama-3.1-8b'))
+          || models.find(id => id.includes('llama-3.3-70b'))
+          || models.find(id => id.includes('llama'))
+          || models[0];
+        if (preferred) activeGroqModel = preferred;
+        return activeGroqModel;
+      } catch (err) {
+        throw err;
+      }
+    }
 
-      // 1. If Groq Key (gsk_...) -> Sub-0.4s Ultra Speed
+    async function streamAIResponse(messages, sysPrompt, onChunk) {
+      if (!apiKey) throw new Error('No API key pasted');
+
+      // 1. Groq API (gsk_...)
       if (apiKey.startsWith('gsk_')) {
         const groqMsgs = [{ role: 'system', content: sysPrompt }, ...messages.map(m => ({
           role: m.role === 'model' ? 'assistant' : 'user',
           content: m.parts[0].text
         }))];
 
-        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        let res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-          body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: groqMsgs, stream: true, temperature: 0.6, max_tokens: 300 })
+          body: JSON.stringify({ model: activeGroqModel, messages: groqMsgs, stream: true, temperature: 0.6, max_tokens: 300 })
         });
-        if (!res.ok) throw new Error('API_ERROR');
+
+        // If default model changed, auto-detect live model and retry once
+        if (!res.ok) {
+          const detected = await getGroqModel();
+          res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+            body: JSON.stringify({ model: detected, messages: groqMsgs, stream: true, temperature: 0.6, max_tokens: 300 })
+          });
+          if (!res.ok) {
+            const errJson = await res.json().catch(() => ({}));
+            throw new Error(errJson.error?.message || `Groq HTTP ${res.status}`);
+          }
+        }
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
@@ -236,7 +270,7 @@
         return full;
       }
 
-      // 2. Gemini API with thinkingBudget: 0 + Live SSE Streaming (< 1s first word)
+      // 2. Gemini API (AIzaSy...)
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${encodeURIComponent(apiKey)}`;
       const res = await fetch(url, {
         method: 'POST',
@@ -244,20 +278,18 @@
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: sysPrompt }] },
           contents: messages,
-          generationConfig: {
-            temperature: 0.6,
-            maxOutputTokens: 300,
-            thinkingConfig: { thinkingBudget: 0 }
-          }
+          generationConfig: { temperature: 0.6, maxOutputTokens: 300, thinkingConfig: { thinkingBudget: 0 } }
         })
       });
 
-      if (!res.ok) throw new Error('API_ERROR');
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error?.message || `Gemini HTTP ${res.status}`);
+      }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '', full = '';
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -287,14 +319,17 @@
         return;
       }
       btn.textContent = '...';
+      status.textContent = '⏳ Testing...';
+      status.className = 'text-[11px] text-amber-400 font-semibold';
+
       const start = performance.now();
       try {
         await streamAIResponse([{ role: 'user', parts: [{ text: 'Hi' }] }], 'Reply with 1 word: Ready.', () => {});
         const sec = ((performance.now() - start) / 1000).toFixed(1);
         status.textContent = `✅ Active! (${sec}s speed)`;
         status.className = 'text-[11px] text-emerald-400 font-bold';
-      } catch {
-        status.textContent = '❌ Invalid Key (Use AIzaSy... or gsk_...)';
+      } catch (err) {
+        status.textContent = `❌ ${err.message}`;
         status.className = 'text-[11px] text-rose-400 font-bold';
       }
       btn.textContent = 'Test';
@@ -409,14 +444,11 @@ Rules:
       input.value = '';
       btn.disabled = true;
 
-      // Create immediate streaming bubble with pulsing dots
       const botBox = createBubble('bot', `<span class="inline-flex gap-1 py-1"><span class="w-2 h-2 bg-emerald-500 rounded-full d1"></span><span class="w-2 h-2 bg-emerald-500 rounded-full d2"></span><span class="w-2 h-2 bg-emerald-500 rounded-full d3"></span></span>`);
-
       chatHistory.push({ role: 'user', parts: [{ text }] });
 
       try {
         const reply = await streamAIResponse(chatHistory, systemPrompt, (partialText) => {
-          // Hide [CONFIRMED...] tag while streaming live
           const cleanVisible = partialText.split('[CONFIRMED')[0].trim();
           if (cleanVisible) {
             botBox.innerHTML = cleanVisible;
@@ -460,9 +492,7 @@ Rules:
         }
       } catch (err) {
         btn.disabled = false;
-        botBox.innerHTML = err.message === 'NO_KEY'
-          ? `⚠️ Paste your <strong>AIzaSy...</strong> (Gemini) or <strong>gsk_...</strong> (Groq) key in the top bar first.`
-          : `⚠️ Key error — tap <strong>Test</strong> in the top bar to check your API key.`;
+        botBox.innerHTML = `⚠️ ${err.message} — Tap <strong>Test</strong> in the top bar.`;
       }
     }
 
